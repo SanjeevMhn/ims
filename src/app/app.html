@@ -27,7 +27,7 @@
             <th rowspan="2" class="align-middle">Product</th>
             <td rowspan="2" class="p-0! border-0!" [attr.colspan]="weeks.length + 1">
                 <table class="w-full h-full text-[62.5%]">
-                    <td [attr.colspan]="weeks.length" class="p-0!">
+                    <td [attr.colspan]="weeks.length" class="p-0! border-0!">
                         <table class="w-full h-full text-[62.5%]">
                             <tr>
                                 @for(week of weeks; track $index){
@@ -50,14 +50,14 @@
                         </table>
                     </td>
                 </table>
-             </td>
+            </td>
         </tr>
       </thead>
       <tbody>
         @for(delivery of supplierDelivery; track delivery.id){
             <tr>
                 <td>{{delivery.supplier_name}}</td>
-               <td class="p-0!">
+               <td class="p-0! border-0!">
                     <table class="text-[62.5%] w-full">
                         @for(product of delivery.supplier_products; track product.id){
                             <tr>
@@ -66,7 +66,7 @@
                         }
                     </table>
                 </td>
-                <td class="p-0!" [attr.colspan]="weeks.length + 2">
+                <td class="p-0! border-0!" [attr.colspan]="weeks.length + 2">
                     <table class="text-[62.5%] w-full">
                         @for(product of delivery.supplier_products; track product.id){
                             <tr>

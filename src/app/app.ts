@@ -182,38 +182,50 @@ export class App {
       ],
     },
     {
-      id: 2,
-      supplier_name: 'Shree Krishna',
+      id: 3,
+      supplier_name: 'Jay Sean',
       supplier_products: [
         {
           id: 1,
-          product_name: 'Daal',
+          product_name: 'Noodles',
         },
         {
           id: 2,
-          product_name: 'Pea',
+          product_name: 'Pasta',
         },
         {
           id: 3,
-          product_name: 'Spices',
+          product_name: 'Cheese',
         },
         {
           id: 4,
-          product_name: 'Chips',
+          product_name: 'Tomato Sauce',
         },
       ],
       delivery: [
         {
           id: 1,
-          delivery_date: '2025-11-09',
-          delivery_product: 'Spices',
-          delivery_product_amount: 200,
+          delivery_date: '2025-11-01',
+          delivery_product: 'Tomato Sauce',
+          delivery_product_amount: 500,
         },
         {
           id: 2,
-          delivery_date: '2025-11-15',
-          delivery_product: 'Daal',
-          delivery_product_amount: 10,
+          delivery_date: '2025-11-05',
+          delivery_product: 'Pasta',
+          delivery_product_amount: 400,
+        },
+        {
+          id: 3,
+          delivery_date: '2025-11-05',
+          delivery_product: 'Cheese',
+          delivery_product_amount: 150,
+        },
+        {
+          id: 4,
+          delivery_date: '2025-12-01',
+          delivery_product: 'Cheese',
+          delivery_product_amount: 200,
         },
       ],
     },

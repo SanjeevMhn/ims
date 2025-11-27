@@ -87,9 +87,14 @@
     font-size: 1.5em;
     font-weight: 500;
     border: 1px solid #adadad;
-    background-color: #cffbf3;
   }
   --padding: 0.5em;
+
+  thead{
+    td,th{
+      background-color: #e1ffc0;
+    }
+  }
 
   td {
     font-size: 1.5em;
@@ -98,6 +103,23 @@
     background-color: #cffbf3;
     white-space: nowrap;
   }
+
+  td.data-td{
+    cursor: pointer;
+    &:hover{
+      position: relative;
+      &:after{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 3px solid rgb(232, 181, 28);
+      }
+    }
+  }
+
   tr {
     &:first-child {
       th {
@@ -109,6 +131,14 @@
       th {
         padding: var(--padding);
         border-width: 0 1px 1px 0;
+      }
+    }
+  }
+
+  tr.main-tr{
+    &:nth-child(odd){
+      td{
+        background-color: #c5e2dd;
       }
     }
   }

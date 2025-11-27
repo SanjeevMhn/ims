@@ -21,7 +21,7 @@
   </header>
   <div class="table-container w-full overflow-y-auto grow">
     <table class="calendar-table w-full">
-      <thead>
+      <thead class="sticky top-0">
         <tr>
             <th rowspan="2">Supplier</th>
             <th rowspan="2" class="align-middle">Product</th>
@@ -33,6 +33,7 @@
                                 @for(week of weeks; track $index){
                                 <td
                                     [class.text-neutral-400]="!week.is_current"
+                                    class="border-0! border-r! border-b! min-w-[3.6em] font-semibold text-center"
                                 >
                                     {{ week == null ? $index + 1 : week.dayIndex }}
                                 </td>
@@ -42,6 +43,7 @@
                                 @for(week of weeks; track $index){
                                 <td
                                     [class.text-neutral-400]="!week.is_current"
+                                    class="border-0! border-b! border-r! font-semibold text-center"
                                 >
                                     {{ week == null ? $index + 1 : week.dayName }}
                                 </td>
@@ -55,13 +57,13 @@
       </thead>
       <tbody>
         @for(delivery of supplierDelivery; track delivery.id){
-            <tr>
-                <td>{{delivery.supplier_name}}</td>
-               <td class="p-0! border-0!">
+            <tr class="main-tr">
+                <td class="border-0! border-b!">{{delivery.supplier_name}}</td>
+                <td class="p-0! border-0!">
                     <table class="text-[62.5%] w-full">
                         @for(product of delivery.supplier_products; track product.id){
                             <tr>
-                                <td>{{product.product_name}}</td>
+                                <td class="border-0! border-l! border-b!">{{product.product_name}}</td>
                             </tr>
                         }
                     </table>
@@ -71,14 +73,20 @@
                         @for(product of delivery.supplier_products; track product.id){
                             <tr>
                                 @for(week of weeks; track $index){
-                                    <td class="h-[2.2em]">22</td>
+                                    <td class="h-[2.5em] max-h-[3.5em] border-0! border-l! border-b! w-[3.5em] data-td">
+                                        @for(supp of supplierDelivery; track supp.id){
+                                            @for(delivery of supp.delivery; track delivery.id){
+                                                @if(delivery.delivery_date == week.fullDate && delivery.delivery_product == product.product_name){
+                                                    {{delivery.delivery_product_amount}}
+                                                }
+                                            }
+                                        }
+                                    </td>
                                 }
                             </tr>
                         }
                     </table>
                 </td>
-               
-                   
             </tr>
         }
       </tbody>

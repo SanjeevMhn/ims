@@ -3,19 +3,37 @@ import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { BehaviorSubject, combineLatest, filter, map, startWith, Subject, tap } from 'rxjs';
+import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ReactiveFormsModule, AsyncPipe],
+  imports: [RouterOutlet, ReactiveFormsModule, AsyncPipe, LucideAngularModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('ims');
 
+  chevronleft = ChevronLeft;
+  chevronright = ChevronRight;
+
   currentMonthForm = new FormGroup({
     month: new FormControl(''),
   });
+
+  view = new BehaviorSubject<'month' | 'week'>('month');
+
+  viewChange$ = this.view.pipe(
+    map((view) => view),
+    tap((view) => {
+      if (view == 'week') {
+        this.selectedWeek$.next(1);
+      } else {
+        this.selectedWeek$.next(null);
+      }
+    })
+  );
 
   currentMonthFormatted = new Date().getFullYear() + '-' + new Date().getMonth();
   currentMonth = new BehaviorSubject<string>(this.currentMonthFormatted.toString());
@@ -225,7 +243,7 @@ export class App {
           id: 4,
           delivery_date: '2025-12-01',
           delivery_product: 'Cheese',
-          delivery_product_amount: 200,
+          delivery_product_amount: 20000,
         },
       ],
     },
@@ -248,5 +266,56 @@ export class App {
   onWeekChange(event: any) {
     let value = event.target.value == 'null' ? null : event.target.value;
     this.selectedWeek$.next(value);
+  }
+
+  onViewChange(event: any) {
+    let value = event.target.value;
+    this.view.next(value);
+  }
+
+  prevView(view: 'month' | 'week') {
+    if (view == 'month') {
+      let currentMonth = this.currentMonthForm.get('month')?.value;
+      if (currentMonth) {
+        let [year, month] = currentMonth?.split('-');
+        let newYear = Number(month) == 1 ? Number(year) - 1 : Number(year);
+        let newMonth = Number(month) == 1 ? 12 : Number(month) - 1;
+        let formatted = newYear + '-' + newMonth.toString().padStart(2, '0');
+        this.onMonthChange({
+          target: {
+            value: formatted,
+          },
+        });
+      }
+    }
+
+    if(view == 'week'){
+      if(this.selectedWeek$.value !== null && this.selectedWeek$.value > 1){
+        this.selectedWeek$.next(this.selectedWeek$.value - 1)
+      }
+    }
+
+  }
+  nextView(view: 'month' | 'week') {
+    if (view == 'month') {
+      let currentMonth = this.currentMonthForm.get('month')?.value;
+      if (currentMonth) {
+        let [year, month] = currentMonth?.split('-');
+        let newYear = Number(month) == 12 ? Number(year) + 1 : Number(year);
+        let newMonth = Number(month) == 12 ? 1 : Number(month) + 1;
+        let formatted = newYear + '-' + newMonth.toString().padStart(2, '0');
+        this.onMonthChange({
+          target: {
+            value: formatted,
+          },
+        });
+      }
+    }
+
+    if(view == 'week'){
+      if(this.selectedWeek$.value !== null && this.selectedWeek$.value < this.totalWeeks){
+        this.selectedWeek$.next(this.selectedWeek$.value + 1)
+      }
+    }
   }
 }

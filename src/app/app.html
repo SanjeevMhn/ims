@@ -11,12 +11,37 @@
         (change)="onMonthChange($event)"
       />
     </form>
-    <select name="" id="" class="form-control" (change)="onWeekChange($event)">
+
+    <select name="" id="" class="form-control" (change)="onViewChange($event)">
+        <option value="month">Month</option>
+        <option value="week">Week</option>
+    </select>
+    <!-- <select name="" id="" class="form-control" (change)="onWeekChange($event)">
       <option value="null">Select Week</option>
       @for(week of getTotalWeeks(); track week){
       <option [value]="week">Week {{ week }}</option>
       }
-    </select>
+    </select> -->
+    @if(viewChange$ | async; as currentView){
+    <div class="pagination-container flex items-center gap-[0.5em]">
+        <button type="button" class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="prevView(currentView)">
+            <span class="icon-container">
+                <lucide-angular [img]="chevronleft" />
+            </span>
+        </button>
+       <button type="button" class="pagination-btn cursor-pointer  p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="nextView(currentView)">
+            <span class="icon-container">
+                <lucide-angular [img]="chevronright" />
+            </span>
+        </button>
+    </div>
+    }
+    <!-- <select name="" id="" class="form-control">
+        <option value="null">Select Supplier</option>
+        @for(supplier of supplierDelivery; track supplier.id){
+            <option [value]="supplier.supplier_name">{{supplier.supplier_name}}</option>
+        }
+    </select> -->
     <h2 class="text-[2em] font-semibold ml-auto">Supplier Product Delivery Calendar</h2>
   </header>
   <div class="table-container w-full overflow-y-auto grow">
@@ -33,9 +58,9 @@
                                 @for(week of weeks; track $index){
                                 <td
                                     [class.text-neutral-400]="!week.is_current"
-                                    class="border-0! border-r! border-b! min-w-[3.6em] font-semibold text-center"
+                                    class="border-0! border-b! border-r! font-medium text-center min-w-[5em] uppercase"
                                 >
-                                    {{ week == null ? $index + 1 : week.dayIndex }}
+                                    {{ week == null ? $index + 1 : week.dayName }}
                                 </td>
                                 }
                             </tr>
@@ -43,12 +68,13 @@
                                 @for(week of weeks; track $index){
                                 <td
                                     [class.text-neutral-400]="!week.is_current"
-                                    class="border-0! border-b! border-r! font-semibold text-center"
+                                    class="border-0! border-r! border-b! min-w-[5em] font-semibold text-center text-[1.8em]!"
                                 >
-                                    {{ week == null ? $index + 1 : week.dayName }}
+                                    {{ week == null ? $index + 1 : week.dayIndex }}
                                 </td>
                                 }
                             </tr>
+                           
                         </table>
                     </td>
                 </table>
@@ -66,7 +92,7 @@
                                 <td class="border-0! border-l! border-b!">{{product.product_name}}</td>
                             </tr>
                         }
-                    </table>
+                    </table> 
                 </td>
                 <td class="p-0! border-0!" [attr.colspan]="weeks.length + 2">
                     <table class="text-[62.5%] w-full">

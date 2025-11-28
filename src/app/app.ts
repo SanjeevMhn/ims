@@ -1,10 +1,9 @@
-import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Component, ElementRef, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { BehaviorSubject, combineLatest, filter, map, startWith, Subject, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, tap } from 'rxjs';
 import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -298,6 +297,24 @@ export class App {
     },
   ];
 
+  eventList = [
+    {
+      id: 1,
+      title: 'Interview at 2pm',
+      date: '2025-12-01',
+    },
+    {
+      id: 2,
+      title: 'Attend Wedding',
+      date: '2025-12-01',
+    },
+    {
+      id: 3,
+      title: 'Half Marathon',
+      date: '2025-12-05',
+    },
+  ];
+
   getTotalWeeks(): Array<number> {
     let weeks = [];
     for (let i = 1; i <= this.totalWeeks; i++) {
@@ -371,10 +388,13 @@ export class App {
     }
   }
 
-  getFormattedDate(date:string | undefined | null){
-    if(date == undefined || date == null) return
-    let newDate = new Date(date).toLocaleDateString('en-US', {month: 'long'}) + ' ' + new Date(date).getFullYear()
-    return newDate; 
+  getFormattedDate(date: string | undefined | null) {
+    if (date == undefined || date == null) return;
+    let newDate =
+      new Date(date).toLocaleDateString('en-US', { month: 'long' }) +
+      ' ' +
+      new Date(date).getFullYear();
+    return newDate;
   }
 
   animateTable = signal(false);
@@ -384,5 +404,12 @@ export class App {
     setTimeout(() => {
       this.animateTable.set(false);
     }, 350);
+  }
+
+  @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>
+  addEvent(){
+    if(this.eventDialogRef){
+      this.eventDialogRef.nativeElement.showModal()
+    }
   }
 }

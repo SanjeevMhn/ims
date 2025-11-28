@@ -1,4 +1,4 @@
-<div class="wrapper text-[62.5%] h-screen w-full p-[2em] flex flex-col">
+<div class="wrapper relative text-[62.5%] h-screen w-full p-[2em] flex flex-col">
   @if(getWeeks$ | async; as weeks){
   <header class="flex gap-[1.5em] items-center mb-[1.5em]">
     <h2 class="text-[2em] font-semibold">Events Calendar</h2>
@@ -28,9 +28,6 @@
     </form>
     <div class="date text-[2.2em] font-medium">{{getFormattedDate(currentMonthForm.get('month')?.value)}}</div>
     <div class="group flex items-center gap-[0.5em]  ml-auto">
-        <div class="label text-[1.6em]">
-            View
-        </div>
         <select name="" id="" class="form-control" (change)="onViewChange($event)">
             <option value="month">Month</option>
             <option value="week">Week</option>
@@ -145,18 +142,25 @@
                     <div class="day-name">{{day}}</div>
             }
         </div>
-        <div class="calendar-body" [class.grid]="weeks.week == null">
+        <div class="calendar-body grid">
         @if(weeks.week == null){
             @for(week of weeks.group; track $index + 1){
                 <div class="week">
                     @for(day of week; track $index + 2){
-                        <div class="day">
+                        <div class="day" (click)="addEvent()">
                             <div class="day-index">
                                 @if(!day.is_current){
                                     {{day.monthName}} - 
                                 }
                             {{day.dayIndex}}
                             </div>
+                            <ul class="event-list flex flex-col gap-[0.2em]">
+                                @for(event of eventList; track event.id){
+                                    @if(event.date == day.fullDate){
+                                        <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg">{{event.title}}</li>
+                                    }
+                                }
+                            </ul>
                         </div>
                     }
                 </div>
@@ -178,5 +182,17 @@
         </div>
     </div>
   }
+
+  <dialog class="event-dialog" #eventDialog>
+    <form class="form">
+        <div class="form-group">
+            <label for="event" class="form-label">Event Title</label>
+            <input type="text" name="event" id="event" class="form-control" placeholder="Add Title">
+        </div>
+        <div class="form-action">
+            <button type="submit" class="btn">Save</button>
+        </div>
+    </form>
+  </dialog>
 </div>
 <router-outlet />

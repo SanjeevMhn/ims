@@ -166,7 +166,7 @@
 .calendar-container {
   width: 100%;
   .calendar-body{
-    height: calc(100% - 5em);
+    height: calc(100% - 4em);
   }
 
   .week {
@@ -175,25 +175,39 @@
     .day {
       border: 1px solid #adadad;
       font-size: 1.6em;
-      padding: 1em;
+      padding: 0.5em;
       text-align: center;
+      cursor: pointer;
       &:not(:first-child) {
         border-left-width: 0;
       }
     }
 
     &.day-names {
-      height: 5em;
+      height: 4em;
       .day-name {
         border: 1px solid #adadad;
         font-size: 1.7em;
         font-weight: 500;
         text-align: center;
-        padding: 0.5em;
+        padding: 0.25em;
         &:not(:first-child) {
           border-left-width: 0;
         }
       }
     }
+  }
+}
+
+
+dialog.event-dialog{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+
+  &[open]{
+    display: grid;
+    place-items: center;
+    background-color: #00000039;
   }
 }

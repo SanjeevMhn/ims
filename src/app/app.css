@@ -38,11 +38,11 @@
 }
 .form-control {
   padding: 0.5em 1em;
-  border: 1px solid #adadad;
   /* border-radius: 0.5em; */
   font-size: 1.6em;
   background-color: #dffbf6;
   border-radius: 100vh;
+  border: 1px solid #adadad;
 }
 .error-list {
   display: flex;
@@ -78,9 +78,13 @@
 }
 
 .table-container {
-  border-radius: 1.2em;
+  /* border-radius: 1.2em; */
   background-color: #fff;
-  border: 2px solid #adadad;
+  border: 1px solid #adadad;
+}
+
+.table-container.move {
+  animation: move 350ms ease-in-out;
 }
 
 .calendar-table {
@@ -88,11 +92,16 @@
     font-size: 1.5em;
     font-weight: 500;
     border: 1px solid #adadad;
+    &.sticky-th {
+      box-shadow: inset -1px -1px 0 0 #adadad;
+      border-width: 0 !important;
+    }
   }
   --padding: 0.5em;
 
-  thead{
-    td,th{
+  thead {
+    td,
+    th {
       background-color: #e1ffc0;
     }
   }
@@ -105,11 +114,11 @@
     white-space: nowrap;
   }
 
-  td.data-td{
+  td.data-td {
     cursor: pointer;
-    &:hover{
+    &:hover {
       position: relative;
-      &:after{
+      &:after {
         content: '';
         position: absolute;
         top: 0;
@@ -136,10 +145,54 @@
     }
   }
 
-  tr.main-tr{
-    &:nth-child(odd){
-      td{
+  tr.main-tr {
+    &:nth-child(odd) {
+      td {
         background-color: #c5e2dd;
+      }
+    }
+  }
+}
+
+@keyframes move {
+  /* 0%{
+    transform: translateX(-5em);
+  }
+  100%{
+    transform: translateX(0)
+  } */
+}
+
+.calendar-container {
+  width: 100%;
+  .calendar-body{
+    height: calc(100% - 5em);
+  }
+
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    .day {
+      border: 1px solid #adadad;
+      font-size: 1.6em;
+      padding: 1em;
+      text-align: center;
+      &:not(:first-child) {
+        border-left-width: 0;
+      }
+    }
+
+    &.day-names {
+      height: 5em;
+      .day-name {
+        border: 1px solid #adadad;
+        font-size: 1.7em;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.5em;
+        &:not(:first-child) {
+          border-left-width: 0;
+        }
       }
     }
   }

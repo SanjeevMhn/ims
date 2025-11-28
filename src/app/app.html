@@ -1,27 +1,7 @@
 <div class="wrapper text-[62.5%] h-screen w-full p-[2em] flex flex-col">
   @if(getWeeks$ | async; as weeks){
   <header class="flex gap-[1.5em] items-center mb-[1.5em]">
-    <form [formGroup]="currentMonthForm">
-      <input
-        type="month"
-        name=""
-        id=""
-        formControlName="month"
-        class="form-control"
-        (change)="onMonthChange($event)"
-      />
-    </form>
-
-    <select name="" id="" class="form-control" (change)="onViewChange($event)">
-        <option value="month">Month</option>
-        <option value="week">Week</option>
-    </select>
-    <!-- <select name="" id="" class="form-control" (change)="onWeekChange($event)">
-      <option value="null">Select Week</option>
-      @for(week of getTotalWeeks(); track week){
-      <option [value]="week">Week {{ week }}</option>
-      }
-    </select> -->
+    <h2 class="text-[2em] font-semibold">Events Calendar</h2>
     @if(viewChange$ | async; as currentView){
     <div class="pagination-container flex items-center gap-[0.5em]">
         <button type="button" class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="prevView(currentView)">
@@ -36,88 +16,167 @@
         </button>
     </div>
     }
-    <!-- <select name="" id="" class="form-control">
-        <option value="null">Select Supplier</option>
-        @for(supplier of supplierDelivery; track supplier.id){
-            <option [value]="supplier.supplier_name">{{supplier.supplier_name}}</option>
-        }
-    </select> -->
-    <h2 class="text-[2em] font-semibold ml-auto">Supplier Product Delivery Calendar</h2>
+    <form [formGroup]="currentMonthForm">
+      <input
+        type="month"
+        name=""
+        id=""
+        formControlName="month"
+        class="form-control"
+        (change)="onMonthChange($event)"
+      />
+    </form>
+    <div class="date text-[2.2em] font-medium">{{getFormattedDate(currentMonthForm.get('month')?.value)}}</div>
+    <div class="group flex items-center gap-[0.5em]  ml-auto">
+        <div class="label text-[1.6em]">
+            View
+        </div>
+        <select name="" id="" class="form-control" (change)="onViewChange($event)">
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+        </select>
+    </div>
   </header>
-  <div class="table-container w-full overflow-y-auto grow">
-    <table class="calendar-table w-full">
-      <thead class="sticky top-0">
-        <tr>
-            <th rowspan="2">Supplier</th>
-            <th rowspan="2" class="align-middle">Product</th>
-            <td rowspan="2" class="p-0! border-0!" [attr.colspan]="weeks.length + 1">
-                <table class="w-full h-full text-[62.5%]">
-                    <td [attr.colspan]="weeks.length" class="p-0! border-0!">
+  <!-- <div class="flex h-full"> -->
+    <!-- <div class="frozon-column h-full border-[#adadad] border-l border-t border-b z-50">
+        <table class="calendar-table">
+            <thead class="sticky top-0 h-[7.3em] border-[#adadad] border-b">
+                <tr>
+                    <th  class="sticky left-0">Supplier</th>
+                    <th class="align-middle sticky left-[7em]">Product</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(delivery of supplierDelivery; track delivery.id){
+                <tr class="main-tr">
+                    <td class="border-0! border-b! sticky left-0">{{delivery.supplier_name}}</td>
+                    <td class="p-0! border-0! sticky left-[7em]">
+                        <table class="text-[62.5%] w-full">
+                            @for(product of delivery.supplier_products; track product.id){
+                                <tr>
+                                    <td class="border-0! border-l! border-b!">{{product.product_name}}</td>
+                                </tr>
+                            }
+                        </table> 
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div> -->
+    <!-- <div class="table-container w-full overflow-y-auto h-full" [class]="animateTable() ? 'move' : ''">
+        <table class="calendar-table w-full">
+            <thead class="sticky top-0">
+                <tr>
+                    <th rowspan="2" class="sticky left-0 sticky-th">Supplier</th>
+                    <th rowspan="2" class="align-middle sticky left-[7em] sticky-th">Product</th>
+                    <td rowspan="2" class="p-0! border-0!" [attr.colspan]="weeks.length + 1">
                         <table class="w-full h-full text-[62.5%]">
-                            <tr>
-                                @for(week of weeks; track $index){
-                                <td
-                                    [class.text-neutral-400]="!week.is_current"
-                                    class="border-0! border-b! border-r! font-medium text-center min-w-[5em] uppercase"
-                                >
-                                    {{ week == null ? $index + 1 : week.dayName }}
-                                </td>
-                                }
-                            </tr>
-                            <tr>
-                                @for(week of weeks; track $index){
-                                <td
-                                    [class.text-neutral-400]="!week.is_current"
-                                    class="border-0! border-r! border-b! min-w-[5em] font-semibold text-center text-[1.8em]!"
-                                >
-                                    {{ week == null ? $index + 1 : week.dayIndex }}
-                                </td>
-                                }
-                            </tr>
-                           
+                            <td [attr.colspan]="weeks.length" class="p-0! border-0!">
+                                <table class="w-full h-full text-[62.5%]">
+                                    <tr>
+                                        @for(week of weeks; track $index){
+                                        <td
+                                            [class.text-neutral-400]="!week.is_current"
+                                            class="border-0! border-b! border-r! font-medium text-center min-w-[5em] uppercase"
+                                        >
+                                            {{ week == null ? $index + 1 : week.dayName }}
+                                        </td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @for(week of weeks; track $index){
+                                        <td
+                                            [class.text-neutral-400]="!week.is_current"
+                                            class="border-0! border-r! border-b! min-w-[5em] font-semibold text-center text-[1.8em]!"
+                                        >
+                                            {{ week == null ? $index + 1 : week.dayIndex }}
+                                        </td>
+                                        }
+                                    </tr>
+                                
+                                </table>
+                            </td>
                         </table>
                     </td>
-                </table>
-            </td>
-        </tr>
-      </thead>
-      <tbody>
-        @for(delivery of supplierDelivery; track delivery.id){
-            <tr class="main-tr">
-                <td class="border-0! border-b!">{{delivery.supplier_name}}</td>
-                <td class="p-0! border-0!">
-                    <table class="text-[62.5%] w-full">
-                        @for(product of delivery.supplier_products; track product.id){
-                            <tr>
-                                <td class="border-0! border-l! border-b!">{{product.product_name}}</td>
-                            </tr>
-                        }
-                    </table> 
-                </td>
-                <td class="p-0! border-0!" [attr.colspan]="weeks.length + 2">
-                    <table class="text-[62.5%] w-full">
-                        @for(product of delivery.supplier_products; track product.id){
-                            <tr>
-                                @for(week of weeks; track $index){
-                                    <td class="h-[2.5em] max-h-[3.5em] border-0! border-l! border-b! w-[3.5em] data-td">
-                                        @for(supp of supplierDelivery; track supp.id){
-                                            @for(delivery of supp.delivery; track delivery.id){
-                                                @if(delivery.delivery_date == week.fullDate && delivery.delivery_product == product.product_name){
-                                                    {{delivery.delivery_product_amount}}
-                                                }
-                                            }
-                                        }
-                                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                @for(delivery of supplierDelivery; track delivery.id){
+                    <tr class="main-tr">
+                        <td class="border-0! border-b! sticky left-0">{{delivery.supplier_name}}</td>
+                        <td class="p-0! border-0! sticky left-[7em]">
+                            <table class="text-[62.5%] w-full">
+                                @for(product of delivery.supplier_products; track product.id){
+                                    <tr>
+                                        <td class="border-0! border-l! border-r! border-b!">{{product.product_name}}</td>
+                                    </tr>
                                 }
-                            </tr>
+                            </table> 
+                        </td>
+                        <td class="p-0! border-0!" [attr.colspan]="weeks.length + 2">
+                            <table class="text-[62.5%] w-full">
+                                @for(product of delivery.supplier_products; track product.id){
+                                    <tr>
+                                        @for(week of weeks; track $index){
+                                            <td class="h-[2.5em] max-h-[3.5em] border-0! border-l! border-b! w-[3.5em] data-td">
+                                                @for(supp of supplierDelivery; track supp.id){
+                                                    @for(delivery of supp.delivery; track delivery.id){
+                                                        @if(delivery.delivery_date == week.fullDate && delivery.delivery_product == product.product_name){
+                                                            {{delivery.delivery_product_amount}}
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div> -->
+  <!-- </div>  -->
+    <div class="calendar-container grow">
+        <div class="week day-names">
+            @for(day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day){
+                    <div class="day-name">{{day}}</div>
+            }
+        </div>
+        <div class="calendar-body" [class.grid]="weeks.week == null">
+        @if(weeks.week == null){
+            @for(week of weeks.group; track $index + 1){
+                <div class="week">
+                    @for(day of week; track $index + 2){
+                        <div class="day">
+                            <div class="day-index">
+                                @if(!day.is_current){
+                                    {{day.monthName}} - 
+                                }
+                            {{day.dayIndex}}
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }@else{
+            <div class="week">
+            @for(day of weeks.group[weeks.week - 1]; track $index + 3){
+                <div class="day">
+                    <div class="day-index">
+                        @if(!day.is_current){
+                            {{day.monthName}} - 
                         }
-                    </table>
-                </td>
-            </tr>
+                        {{day.dayIndex}}
+                    </div>
+                </div>
+            }
+            </div>
         }
-      </tbody>
-    </table>
-  </div>
+        </div>
+    </div>
   }
 </div>
 <router-outlet />

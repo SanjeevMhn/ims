@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
@@ -64,6 +64,7 @@ export class App {
           day: date.getDay(),
           dayIndex: date.getDate(),
           dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          monthName: date.toLocaleDateString('en-US', { month: 'short' }),
           fullDate:
             data.year +
             '-' +
@@ -74,65 +75,113 @@ export class App {
         });
       }
 
-      if (data.week !== null) {
-        let firstDay = days[0].day;
-        let prevMonthYear = Number(data.month) !== 0 ? Number(data.year) : Number(data.year) - 1;
-        let prevMonth = Number(data.month) !== 0 ? Number(data.month) - 1 : 11;
-        let prevMonthLastDay = new Date(prevMonthYear, prevMonth + 1, 0).getDate();
-        let prevMonthDays = [];
-        for (let i = 1; i <= prevMonthLastDay; i++) {
-          let date: Date = new Date(prevMonthYear, prevMonth, i);
-          prevMonthDays.push({
+      // if (data.week !== null) {
+      let firstDay = days[0].day;
+      let prevMonthYear = Number(data.month) !== 0 ? Number(data.year) : Number(data.year) - 1;
+      let prevMonth = Number(data.month) !== 0 ? Number(data.month) - 1 : 11;
+      let prevMonthLastDay = new Date(prevMonthYear, prevMonth + 1, 0).getDate();
+      let prevMonthDays = [];
+      for (let i = 1; i <= prevMonthLastDay; i++) {
+        let date: Date = new Date(prevMonthYear, prevMonth, i);
+        prevMonthDays.push({
+          day: date.getDay(),
+          dayIndex: date.getDate(),
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          monthName: date.toLocaleDateString('en-US', { month: 'short' }),
+          fullDate:
+            prevMonthYear +
+            '-' +
+            (prevMonth + 1).toString().padStart(2, '0') +
+            '-' +
+            date.getDate().toString().padStart(2, '0'),
+          is_current: false,
+        });
+      }
+
+      let addToNewMonth = prevMonthDays.slice(-firstDay);
+      days = [...addToNewMonth, ...days];
+
+      let groupedDays = this.groupDaysByWeeks(days);
+
+      if (groupedDays[groupedDays.length - 1].length < 7) {
+        let nextMonthYear = Number(data.month) !== 11 ? Number(data.year) : Number(data.year) + 1;
+        let nextMonth = Number(data.month) !== 11 ? Number(data.month) + 1 : 0;
+        let nextMonthLastDay = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
+        let nextMonthDays = [];
+
+        for (let i = 1; i <= nextMonthLastDay; i++) {
+          let date = new Date(nextMonthYear, nextMonth, i);
+          nextMonthDays.push({
             day: date.getDay(),
             dayIndex: date.getDate(),
             dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+            monthName: date.toLocaleDateString('en-US', { month: 'short' }),
             fullDate:
-              prevMonthYear +
+              nextMonthYear +
               '-' +
-              (prevMonth + 1).toString().padStart(2, '0') +
+              (nextMonth + 1).toString().padStart(2, '0') +
               '-' +
               date.getDate().toString().padStart(2, '0'),
             is_current: false,
           });
         }
 
-        let addToNewMonth = prevMonthDays.slice(-firstDay);
-        days = [...addToNewMonth, ...days];
-        let start = (Number(data.week) - 1) * 7;
-        let end = start + 7;
-        let weekDays = days.slice(start, end);
-
-        if (weekDays.length < 7) {
-          let nextMonthYear = Number(data.month) !== 11 ? Number(data.year) : Number(data.year) + 1;
-          let nextMonth = Number(data.month) !== 11 ? Number(data.month) + 1 : 0;
-          let nextMonthLastDay = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
-          let nextMonthDays = [];
-
-          for (let i = 1; i <= nextMonthLastDay; i++) {
-            let date = new Date(nextMonthYear, nextMonth, i);
-            nextMonthDays.push({
-              day: date.getDay(),
-              dayIndex: date.getDate(),
-              dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
-              fullDate:
-                nextMonthYear +
-                '-' +
-                (nextMonth + 1).toString().padStart(2, '0') +
-                '-' +
-                date.getDate().toString().padStart(2, '0'),
-              is_current: false,
-            });
-          }
-
-          let sliceNumber = 7 - weekDays.length;
-          let addToLastWeek = nextMonthDays.slice(0, sliceNumber);
-          weekDays = [...weekDays, ...addToLastWeek];
-        }
-        return weekDays;
+        let sliceNumber = 7 - groupedDays[groupedDays.length - 1].length;
+        let addToLastWeek = nextMonthDays.slice(0, sliceNumber);
+        groupedDays[groupedDays.length - 1] = [
+          ...groupedDays[groupedDays.length - 1],
+          ...addToLastWeek,
+        ];
       }
-      return days;
+
+      // let start = (Number(data.week) - 1) * 7;
+      // let end = start + 7;
+      // let weekDays = days.slice(start, end);
+
+      // if (weekDays.length < 7) {
+      //   let nextMonthYear = Number(data.month) !== 11 ? Number(data.year) : Number(data.year) + 1;
+      //   let nextMonth = Number(data.month) !== 11 ? Number(data.month) + 1 : 0;
+      //   let nextMonthLastDay = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
+      //   let nextMonthDays = [];
+
+      //   for (let i = 1; i <= nextMonthLastDay; i++) {
+      //     let date = new Date(nextMonthYear, nextMonth, i);
+      //     nextMonthDays.push({
+      //       day: date.getDay(),
+      //       dayIndex: date.getDate(),
+      //       dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      //       fullDate:
+      //         nextMonthYear +
+      //         '-' +
+      //         (nextMonth + 1).toString().padStart(2, '0') +
+      //         '-' +
+      //         date.getDate().toString().padStart(2, '0'),
+      //       is_current: false,
+      //     });
+      //   }
+
+      //   let sliceNumber = 7 - weekDays.length;
+      //   let addToLastWeek = nextMonthDays.slice(0, sliceNumber);
+      //   weekDays = [...weekDays, ...addToLastWeek];
+      // }
+      // return weekDays;
+      return {
+        group: groupedDays,
+        week: data.week,
+      };
+      // }
+      // return days;
     })
   );
+
+  groupDaysByWeeks(days: Array<any>) {
+    const result = [];
+    for (let i = 0; i < days.length; i += 7) {
+      result.push(days.slice(i, i + 7));
+    }
+
+    return result;
+  }
 
   supplierDelivery = [
     {
@@ -261,6 +310,7 @@ export class App {
     const [year, month] = event.target.value.split('-');
     const formatted = year + '-' + (month - 1).toString().padStart(2, '0');
     this.currentMonth.next(formatted.toString());
+    this.onAnimateTable();
   }
 
   onWeekChange(event: any) {
@@ -271,9 +321,11 @@ export class App {
   onViewChange(event: any) {
     let value = event.target.value;
     this.view.next(value);
+    this.onAnimateTable();
   }
 
   prevView(view: 'month' | 'week') {
+    this.onAnimateTable();
     if (view == 'month') {
       let currentMonth = this.currentMonthForm.get('month')?.value;
       if (currentMonth) {
@@ -289,14 +341,14 @@ export class App {
       }
     }
 
-    if(view == 'week'){
-      if(this.selectedWeek$.value !== null && this.selectedWeek$.value > 1){
-        this.selectedWeek$.next(this.selectedWeek$.value - 1)
+    if (view == 'week') {
+      if (this.selectedWeek$.value !== null && this.selectedWeek$.value > 1) {
+        this.selectedWeek$.next(this.selectedWeek$.value - 1);
       }
     }
-
   }
   nextView(view: 'month' | 'week') {
+    this.onAnimateTable();
     if (view == 'month') {
       let currentMonth = this.currentMonthForm.get('month')?.value;
       if (currentMonth) {
@@ -312,10 +364,25 @@ export class App {
       }
     }
 
-    if(view == 'week'){
-      if(this.selectedWeek$.value !== null && this.selectedWeek$.value < this.totalWeeks){
-        this.selectedWeek$.next(this.selectedWeek$.value + 1)
+    if (view == 'week') {
+      if (this.selectedWeek$.value !== null && this.selectedWeek$.value < this.totalWeeks) {
+        this.selectedWeek$.next(this.selectedWeek$.value + 1);
       }
     }
+  }
+
+  getFormattedDate(date:string | undefined | null){
+    if(date == undefined || date == null) return
+    let newDate = new Date(date).toLocaleDateString('en-US', {month: 'long'}) + ' ' + new Date(date).getFullYear()
+    return newDate; 
+  }
+
+  animateTable = signal(false);
+  onAnimateTable() {
+    this.animateTable.set(true);
+
+    setTimeout(() => {
+      this.animateTable.set(false);
+    }, 350);
   }
 }

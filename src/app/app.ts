@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, ElementRef, signal, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, tap } from 'rxjs';
 import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
@@ -299,7 +299,7 @@ export class App {
     },
   ];
 
-  eventList = [
+  eventList = signal([
     {
       id: 1,
       title: 'Interview at 2pm',
@@ -315,7 +315,7 @@ export class App {
       title: 'Half Marathon',
       date: '2025-12-05',
     },
-  ];
+  ]);
 
   getTotalWeeks(): Array<number> {
     let weeks = [];
@@ -408,11 +408,42 @@ export class App {
     }, 350);
   }
 
+  selectedDate:string | null = null
   @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>;
-  addEvent() {
+  showAddEventForm(day: any) {
     if (this.eventDialogRef) {
       this.eventDialogRef.nativeElement.showModal();
+      this.selectedDate = day.fullDate;
     }
+  }
+
+  addEventForm = new FormGroup({
+    event: new FormControl('',[Validators.required, Validators.minLength(5)])
+  })
+
+  resetForm(){
+    this.addEventForm.reset()
+    this.addEventForm.markAsUntouched()
+    this.isSubmitted = false
+  }
+
+  isSubmitted = false
+
+  addEvent(event: any){
+    this.isSubmitted = true
+    event.preventDefault();
+    if(this.addEventForm.invalid){
+      this.addEventForm.markAllAsTouched()
+      return;
+    }
+
+    this.eventList.update((prev) => [...prev,{
+      id: this.eventList().length + 1,
+      title: this.addEventForm.get('event')?.value ?? '',
+      date: this.selectedDate ?? ''
+    }])
+    this.eventDialogRef.nativeElement.close()
+    this.resetForm()
   }
 
   checkForToday(date: string) {
@@ -438,7 +469,8 @@ export class App {
     let dateFormat =
       new Date(active.date).toLocaleDateString('en-US', { weekday: 'long' }) +
       ', ' +
-      new Date(active.date).toLocaleDateString('en-US', { month: 'long' }) + ' '+
+      new Date(active.date).toLocaleDateString('en-US', { month: 'long' }) +
+      ' ' +
       new Date(active.date).getDate();
     this.activeEvent = {
       title: active.title,

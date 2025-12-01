@@ -148,17 +148,17 @@
             @for(week of weeks.group; track $index + 1){
                 <div class="week">
                     @for(day of week; track $index + 2){
-                        <div class="day" (click)="addEvent()">
+                        <div class="day" (click)="showAddEventForm(day)">
                             <div class="day-index" [class.today]="checkForToday(day.fullDate)">
                                 @if(!day.is_current){
-                                    {{day.monthName}} -G
+                                    {{day.monthName}} -
                                 }
                             {{day.dayIndex}}
                             </div>
                             <ul class="event-list flex flex-col gap-[0.2em]">
-                                @for(event of eventList; track event.id){
+                                @for(event of eventList(); track event.id){
                                     @if(event.date == day.fullDate){
-                                        <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
+                                        <li class="event p-[0.2em_0.5em]  bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
                                     }
                                 }
                             </ul>
@@ -177,7 +177,7 @@
                         {{day.dayIndex}}
                     </div>
                     <ul class="event-list flex flex-col gap-[0.2em]">
-                        @for(event of eventList; track event.id){
+                        @for(event of eventList(); track event.id){
                             @if(event.date == day.fullDate){
                                 <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg">{{event.title}}</li>
                             }
@@ -191,11 +191,21 @@
     </div>
   }
 
-  <dialog class="event-dialog" #eventDialog>
-    <form class="form bg-white!">
+  <dialog class="event-dialog" #eventDialog (close)="resetForm()">
+    <form [formGroup]="addEventForm" class="form bg-white!" (submit)="addEvent($event)">
         <div class="form-group">
             <label for="event" class="form-label">Event Title</label>
-            <input type="text" name="event" id="event" class="form-control" placeholder="Add Title">
+            <input type="text" name="event" id="event" class="form-control" placeholder="Add Title" formControlName="event">
+            @if(isSubmitted){
+                @if(addEventForm.get('event')?.invalid && addEventForm.get('event')?.touched){
+                    @if(addEventForm.get('event')?.hasError('required')){
+                        <small class="text-red-600 text-[1.2em]">Event Title Required</small>
+                    }
+                    @if(addEventForm.get('event')?.hasError('minlength')){
+                        <small class="text-red-600 text-[1.2em]">Event Title must be atleast 5 characters long</small>
+                    }
+                }
+            }
         </div>
         <div class="form-action">
             <button type="submit" class="btn">Save</button>

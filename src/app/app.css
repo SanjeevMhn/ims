@@ -165,35 +165,38 @@
 
 .calendar-container {
   width: 100%;
-  .calendar-body{
+  .calendar-body {
     height: calc(100% - 4em);
   }
 
   .week {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, calc(100% / 7));
     .day {
       border: 1px solid #adadad;
       font-size: 1.6em;
       padding: 0.5em;
       text-align: center;
       cursor: pointer;
+      width: 100%;
       &:not(:first-child) {
         border-left-width: 0;
       }
 
-      .day-index{
-        &.today{
+      .day-index {
+        &.today {
           border: 1px solid #adadad;
           background-color: #3f93c3;
           padding: 0.5em;
           display: inline-flex;
-          border-radius: 0.5em;
           justify-content: center;
           align-items: center;
           margin: 0 auto;
           margin-bottom: 1em;
           color: #fff;
+          /* aspect-ratio: 5 / 1; */
+          border-radius: 100vh;
+          min-width: 42px;
         }
       }
     }
@@ -214,26 +217,25 @@
   }
 }
 
-
-dialog.event-dialog{
+dialog.event-dialog {
   height: 100vh;
   width: 100vw;
   background-color: unset;
-  &[open]{
+  &[open] {
     display: grid;
     place-items: center;
     outline: unset;
-    &::backdrop{
+    &::backdrop {
       background-color: #00000039;
       backdrop-filter: blur(2px);
     }
   }
 
-  .event-details{
-    h2{
+  .event-details {
+    h2 {
       position: relative;
       padding-left: 1.5em;
-      &::before{
+      &::before {
         content: '';
         position: absolute;
         height: 0.8em;
@@ -244,9 +246,20 @@ dialog.event-dialog{
         transform: translateY(-50%);
         left: 0;
       }
-      & + *{
+      & + * {
         padding-left: 2.2em;
       }
     }
+  }
+}
+
+.event-list {
+  width: 100%;
+  .event {
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }

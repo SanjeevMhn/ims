@@ -2,6 +2,7 @@
   @if(getWeeks$ | async; as weeks){
   <header class="flex gap-[1.5em] items-center mb-[1.5em]">
     <h2 class="text-[2em] font-semibold">Events Calendar</h2>
+    <button class="cursor-pointer p-[0.5em] min-w-[10.5em] rounded-full bg-[#dffbf6] border border-[#adadad] text-[1.6em]" (click)="gotoToday()">Today</button>
     @if(viewChange$ | async; as currentView){
     <div class="pagination-container flex items-center gap-[0.5em]">
         <button type="button" class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="prevView(currentView)">
@@ -142,22 +143,22 @@
                     <div class="day-name">{{day}}</div>
             }
         </div>
-        <div class="calendar-body grid">
+        <div class="calendar-body" [class.grid]="weeks.week == null">
         @if(weeks.week == null){
             @for(week of weeks.group; track $index + 1){
                 <div class="week">
                     @for(day of week; track $index + 2){
                         <div class="day" (click)="addEvent()">
-                            <div class="day-index">
+                            <div class="day-index" [class.today]="checkForToday(day.fullDate)">
                                 @if(!day.is_current){
-                                    {{day.monthName}} - 
+                                    {{day.monthName}} -G
                                 }
                             {{day.dayIndex}}
                             </div>
                             <ul class="event-list flex flex-col gap-[0.2em]">
                                 @for(event of eventList; track event.id){
                                     @if(event.date == day.fullDate){
-                                        <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg">{{event.title}}</li>
+                                        <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
                                     }
                                 }
                             </ul>
@@ -169,12 +170,19 @@
             <div class="week">
             @for(day of weeks.group[weeks.week - 1]; track $index + 3){
                 <div class="day">
-                    <div class="day-index">
+                    <div class="day-index"  [class.today]="checkForToday(day.fullDate)">
                         @if(!day.is_current){
                             {{day.monthName}} - 
                         }
                         {{day.dayIndex}}
                     </div>
+                    <ul class="event-list flex flex-col gap-[0.2em]">
+                        @for(event of eventList; track event.id){
+                            @if(event.date == day.fullDate){
+                                <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg">{{event.title}}</li>
+                            }
+                        }
+                    </ul>
                 </div>
             }
             </div>
@@ -184,7 +192,7 @@
   }
 
   <dialog class="event-dialog" #eventDialog>
-    <form class="form">
+    <form class="form bg-white!">
         <div class="form-group">
             <label for="event" class="form-label">Event Title</label>
             <input type="text" name="event" id="event" class="form-control" placeholder="Add Title">
@@ -193,6 +201,15 @@
             <button type="submit" class="btn">Save</button>
         </div>
     </form>
+  </dialog>
+
+  <dialog class="event-dialog" #showEventDialog>
+    <div class="event-details form bg-white! gap-[0.5em]!">
+        @if(activeEvent){
+        <h2 class="text-[2em] font-medium">{{activeEvent.title}}</h2>
+        <p class="text-[1.6em]">{{activeEvent.date}}</p>
+        }
+    </div>
   </dialog>
 </div>
 <router-outlet />

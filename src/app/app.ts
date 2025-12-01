@@ -97,8 +97,10 @@ export class App {
         });
       }
 
-      let addToNewMonth = prevMonthDays.slice(-firstDay);
-      days = [...addToNewMonth, ...days];
+      if (firstDay > 0) {
+        let addToNewMonth = prevMonthDays.slice(-firstDay);
+        days = [...addToNewMonth, ...days];
+      }
 
       let groupedDays = this.groupDaysByWeeks(days);
 
@@ -406,10 +408,43 @@ export class App {
     }, 350);
   }
 
-  @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>
-  addEvent(){
-    if(this.eventDialogRef){
-      this.eventDialogRef.nativeElement.showModal()
+  @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>;
+  addEvent() {
+    if (this.eventDialogRef) {
+      this.eventDialogRef.nativeElement.showModal();
     }
+  }
+
+  checkForToday(date: string) {
+    return new Date(date).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0);
+  }
+
+  gotoToday() {
+    const year = new Date().getFullYear();
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+
+    this.onMonthChange({
+      target: {
+        value: year + '-' + month,
+      },
+    });
+  }
+
+  @ViewChild('showEventDialog', { static: false })
+  showEventDialogRef!: ElementRef<HTMLDialogElement>;
+  activeEvent: any | null = null;
+  showEvent(event: any, active: any) {
+    event.stopPropagation();
+    let dateFormat =
+      new Date(active.date).toLocaleDateString('en-US', { weekday: 'long' }) +
+      ', ' +
+      new Date(active.date).toLocaleDateString('en-US', { month: 'long' }) + ' '+
+      new Date(active.date).getDate();
+    this.activeEvent = {
+      title: active.title,
+      date: dateFormat,
+    };
+
+    this.showEventDialogRef.nativeElement.showModal();
   }
 }

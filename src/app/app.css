@@ -181,6 +181,21 @@
       &:not(:first-child) {
         border-left-width: 0;
       }
+
+      .day-index{
+        &.today{
+          border: 1px solid #adadad;
+          background-color: #3f93c3;
+          padding: 0.5em;
+          display: inline-flex;
+          border-radius: 0.5em;
+          justify-content: center;
+          align-items: center;
+          margin: 0 auto;
+          margin-bottom: 1em;
+          color: #fff;
+        }
+      }
     }
 
     &.day-names {
@@ -201,13 +216,37 @@
 
 
 dialog.event-dialog{
-  height: 100%;
-  width: 100%;
-  position: absolute;
-
+  height: 100vh;
+  width: 100vw;
+  background-color: unset;
   &[open]{
     display: grid;
     place-items: center;
-    background-color: #00000039;
+    outline: unset;
+    &::backdrop{
+      background-color: #00000039;
+      backdrop-filter: blur(2px);
+    }
+  }
+
+  .event-details{
+    h2{
+      position: relative;
+      padding-left: 1.5em;
+      &::before{
+        content: '';
+        position: absolute;
+        height: 0.8em;
+        width: 0.8em;
+        border-radius: 0.6em;
+        background-color: #2453ee;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+      }
+      & + *{
+        padding-left: 2.2em;
+      }
+    }
   }
 }

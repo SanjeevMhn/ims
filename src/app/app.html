@@ -205,7 +205,7 @@
         </div>
         <div class="form-group">
             <label for="event" class="form-label">Event Title</label>
-            <input type="text" name="event" id="event" class="form-control" placeholder="Add Title" formControlName="event">
+            <input type="text" #eventTitle name="event" id="event" class="form-control" placeholder="Add Title" formControlName="event">
             @if(isSubmitted){
                 @if(addEventForm.get('event')?.invalid && addEventForm.get('event')?.touched){
                     @if(addEventForm.get('event')?.hasError('required')){

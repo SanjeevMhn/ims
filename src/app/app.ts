@@ -391,10 +391,12 @@ export class App {
 
   selectedDate: string | null = null;
   @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>;
+  @ViewChild('eventTitle') eventTitleRef!: ElementRef<HTMLInputElement>;
   showAddEventForm(day: any) {
     if (this.eventDialogRef) {
       this.eventDialogRef.nativeElement.showModal();
       this.selectedDate = day.fullDate;
+      this.eventTitleRef.nativeElement.focus()
     }
   }
 

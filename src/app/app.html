@@ -3,14 +3,14 @@
   <header class="flex gap-[1.5em] items-center mb-[1.5em]">
     <h2 class="text-[2em] font-semibold">Events Calendar</h2>
     @if(viewChange$ | async; as currentView){
-        <button class="cursor-pointer p-[0.5em] min-w-[10.5em] rounded-full bg-[#dffbf6] border border-[#adadad] text-[1.6em]" (click)="gotoToday(currentView, weeks.group)">Today</button>
+        <button class="cursor-pointer p-[0.5em] min-w-[10.5em] rounded-full bg-blue-500 border border-[#adadad] text-[1.6em] text-white" (click)="gotoToday(currentView, weeks.group)">Today</button>
         <div class="pagination-container flex items-center gap-[0.5em]">
             <button type="button" class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="prevView(currentView)" [class]="(currentView == 'week' && (selectedWeek$ | async) == 1) ? 'cursor-not-allowed! grayscale-75 opacity-50' : ''">
                 <span class="icon-container">
                     <lucide-angular [img]="chevronleft" />
                 </span>
             </button>
-        <button type="button" class="pagination-btn cursor-pointer  p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="nextView(currentView)" [class]="(currentView == 'week' && (selectedWeek$ | async) == totalWeeks) ? 'cursor-not-allowed! grayscale-75 opacity-50' : ''">
+            <button type="button" class="pagination-btn cursor-pointer  p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="nextView(currentView)" [class]="(currentView == 'week' && (selectedWeek$ | async) == totalWeeks) ? 'cursor-not-allowed! grayscale-75 opacity-50' : ''">
                 <span class="icon-container">
                     <lucide-angular [img]="chevronright" />
                 </span>
@@ -172,7 +172,7 @@
         }@else{
             <div class="week">
             @for(day of weeks.group[weeks.week - 1]; track $index + 3){
-                <div class="day">
+                <div class="day min-h-[100px]"  (click)="showAddEventForm(day)">
                     <div class="day-index"  [class.today]="checkForToday(day.fullDate)">
                         @if(!day.is_current){
                             {{day.monthName}} - 
@@ -182,7 +182,7 @@
                     <ul class="event-list flex flex-col gap-[0.2em]">
                         @for(event of eventList(); track event.id){
                             @if(event.date == day.fullDate){
-                                <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg">{{event.title}}</li>
+                                <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
                             }
                         }
                     </ul>
@@ -195,7 +195,14 @@
   }
 
   <dialog class="event-dialog" #eventDialog (close)="resetForm()">
-    <form [formGroup]="addEventForm" class="form bg-white!" (submit)="addEvent($event)">
+    <form [formGroup]="addEventForm" class="form bg-white! relative" (submit)="addEvent($event)">
+        <button type="button" class="icon-container ml-auto cursor-pointer" (click)="closeForm()">
+            <lucide-angular [img]="closeIcon"  />
+        </button>
+        <div class="form-group flex-row!">
+            <label for="" class="form-label">Date:</label>
+            <p class="text-[1.6em]">{{selectedDate ? formatDateByMonthAndDayName(selectedDate) : ''}}</p>
+        </div>
         <div class="form-group">
             <label for="event" class="form-label">Event Title</label>
             <input type="text" name="event" id="event" class="form-control" placeholder="Add Title" formControlName="event">
@@ -218,6 +225,17 @@
 
   <dialog class="event-dialog" #showEventDialog>
     <div class="event-details form bg-white! gap-[0.5em]!">
+        <div class="toolbar flex justify-end gap-[1em]">
+            <button type="button" class="icon-container cursor-pointer" (click)="deleteEvent()">
+                <lucide-angular [img]="deleteIcon" />
+            </button>
+            <button type="button" class="icon-contaioner cursor-pointer" (click)="editEvent()">
+                <lucide-angular [img]="editIcon" />
+            </button>
+            <button type="button" class="icon-container cursor-pointer" (click)="closeShowEvent()">
+                <lucide-angular [img]="closeIcon"  />
+            </button>
+        </div>
         @if(activeEvent){
         <h2 class="text-[2em] font-medium">{{activeEvent.title}}</h2>
         <p class="text-[1.6em]">{{activeEvent.date}}</p>

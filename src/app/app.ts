@@ -3,7 +3,7 @@ import { Component, ElementRef, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, tap } from 'rxjs';
-import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import { ChevronLeft, ChevronRight, LucideAngularModule, Pencil, Trash2, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-root',
@@ -16,12 +16,15 @@ export class App {
 
   chevronleft = ChevronLeft;
   chevronright = ChevronRight;
+  closeIcon = X;
+  editIcon = Pencil;
+  deleteIcon = Trash2;
 
   currentMonthForm = new FormGroup({
     month: new FormControl(''),
   });
 
-  currentViewFormControl = new FormControl('')
+  currentViewFormControl = new FormControl('');
 
   view = new BehaviorSubject<'month' | 'week'>('month');
 
@@ -29,10 +32,10 @@ export class App {
     map((view) => view),
     tap((view) => {
       if (view == 'week') {
-        this.currentViewFormControl.setValue('week')
+        this.currentViewFormControl.setValue('week');
         this.selectedWeek$.next(1);
       } else {
-        this.currentViewFormControl.setValue('month')
+        this.currentViewFormControl.setValue('month');
         this.selectedWeek$.next(null);
       }
     })
@@ -79,7 +82,6 @@ export class App {
         });
       }
 
-      // if (data.week !== null) {
       let firstDay = days[0].day;
       let prevMonthYear = Number(data.month) !== 0 ? Number(data.year) : Number(data.year) - 1;
       let prevMonth = Number(data.month) !== 0 ? Number(data.month) - 1 : 11;
@@ -140,38 +142,6 @@ export class App {
         ];
       }
 
-      // let start = (Number(data.week) - 1) * 7;
-      // let end = start + 7;
-      // let weekDays = days.slice(start, end);
-
-      // if (weekDays.length < 7) {
-      //   let nextMonthYear = Number(data.month) !== 11 ? Number(data.year) : Number(data.year) + 1;
-      //   let nextMonth = Number(data.month) !== 11 ? Number(data.month) + 1 : 0;
-      //   let nextMonthLastDay = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
-      //   let nextMonthDays = [];
-
-      //   for (let i = 1; i <= nextMonthLastDay; i++) {
-      //     let date = new Date(nextMonthYear, nextMonth, i);
-      //     nextMonthDays.push({
-      //       day: date.getDay(),
-      //       dayIndex: date.getDate(),
-      //       dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      //       fullDate:
-      //         nextMonthYear +
-      //         '-' +
-      //         (nextMonth + 1).toString().padStart(2, '0') +
-      //         '-' +
-      //         date.getDate().toString().padStart(2, '0'),
-      //       is_current: false,
-      //     });
-      //   }
-
-      //   let sliceNumber = 7 - weekDays.length;
-      //   let addToLastWeek = nextMonthDays.slice(0, sliceNumber);
-      //   weekDays = [...weekDays, ...addToLastWeek];
-      // }
-      // return weekDays;
-
       const year = new Date().getFullYear();
       const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
       const day = new Date().getDate().toString().padStart(2, '0');
@@ -183,8 +153,6 @@ export class App {
         group: groupedDays,
         week: data.week,
       };
-      // }
-      // return days;
     })
   );
 
@@ -441,6 +409,7 @@ export class App {
   }
 
   isSubmitted = false;
+  editMode = false;
 
   addEvent(event: any) {
     this.isSubmitted = true;
@@ -449,15 +418,34 @@ export class App {
       this.addEventForm.markAllAsTouched();
       return;
     }
+    if (!this.editMode) {
+      this.eventList.update((prev) => [
+        ...prev,
+        {
+          id: this.eventList().length + 1,
+          title: this.addEventForm.get('event')?.value ?? '',
+          date: this.selectedDate ?? '',
+        },
+      ]);
+    } else {
+      this.eventList.update((currentEvents: any) => {
+        return currentEvents.map((ce: any) => {
+          if (ce.id == this.activeEvent.id) {
+            return {
+              ...ce,
+              title: this.addEventForm.get('event')?.value,
+            };
+          }
+          return ce;
+        });
+      });
+    }
+    this.editMode = false
+    this.eventDialogRef.nativeElement.close();
+    this.resetForm();
+  }
 
-    this.eventList.update((prev) => [
-      ...prev,
-      {
-        id: this.eventList().length + 1,
-        title: this.addEventForm.get('event')?.value ?? '',
-        date: this.selectedDate ?? '',
-      },
-    ]);
+  closeForm() {
     this.eventDialogRef.nativeElement.close();
     this.resetForm();
   }
@@ -500,17 +488,45 @@ export class App {
   activeEvent: any | null = null;
   showEvent(event: any, active: any) {
     event.stopPropagation();
-    let dateFormat =
-      new Date(active.date).toLocaleDateString('en-US', { weekday: 'long' }) +
-      ', ' +
-      new Date(active.date).toLocaleDateString('en-US', { month: 'long' }) +
-      ' ' +
-      new Date(active.date).getDate();
+    let dateFormat = this.formatDateByMonthAndDayName(active.date);
     this.activeEvent = {
+      id: active.id,
       title: active.title,
       date: dateFormat,
+      fullDate: active.date,
     };
 
     this.showEventDialogRef.nativeElement.showModal();
+  }
+
+  deleteEvent() {
+    this.closeShowEvent();
+    this.eventList.update((prev) => prev.filter((pr) => pr.id !== this.activeEvent.id));
+  }
+
+  editEvent() {
+    this.closeShowEvent();
+    this.addEventForm.patchValue({
+      event: this.activeEvent.title,
+    });
+    this.showAddEventForm({
+      fullDate: this.activeEvent.fullDate,
+    });
+    this.editMode = true;
+  }
+
+  closeShowEvent() {
+    this.showEventDialogRef.nativeElement.close();
+  }
+
+  formatDateByMonthAndDayName(date: string) {
+    let dateFormat =
+      new Date(date).toLocaleDateString('en-US', { weekday: 'long' }) +
+      ', ' +
+      new Date(date).toLocaleDateString('en-US', { month: 'long' }) +
+      ' ' +
+      new Date(date).getDate();
+
+    return dateFormat;
   }
 }

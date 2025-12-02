@@ -21,14 +21,18 @@ export class App {
     month: new FormControl(''),
   });
 
+  currentViewFormControl = new FormControl('')
+
   view = new BehaviorSubject<'month' | 'week'>('month');
 
   viewChange$ = this.view.pipe(
     map((view) => view),
     tap((view) => {
       if (view == 'week') {
+        this.currentViewFormControl.setValue('week')
         this.selectedWeek$.next(1);
       } else {
+        this.currentViewFormControl.setValue('month')
         this.selectedWeek$.next(null);
       }
     })
@@ -38,6 +42,7 @@ export class App {
   currentMonth = new BehaviorSubject<string>(this.currentMonthFormatted.toString());
   selectedWeek$ = new BehaviorSubject<number | null>(null);
   totalWeeks = 0;
+  currentWeek = 0;
 
   getWeeks$ = combineLatest([this.currentMonth, this.selectedWeek$]).pipe(
     map(([date, week]) => {
@@ -166,6 +171,14 @@ export class App {
       //   weekDays = [...weekDays, ...addToLastWeek];
       // }
       // return weekDays;
+
+      const year = new Date().getFullYear();
+      const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+      const day = new Date().getDate().toString().padStart(2, '0');
+      let fullDate = year + '-' + month + '-' + day;
+      this.currentWeek = groupedDays.findIndex((week: Array<any>) => {
+        return week.find((wk) => wk.fullDate == fullDate);
+      });
       return {
         group: groupedDays,
         week: data.week,
@@ -408,7 +421,7 @@ export class App {
     }, 350);
   }
 
-  selectedDate:string | null = null
+  selectedDate: string | null = null;
   @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>;
   showAddEventForm(day: any) {
     if (this.eventDialogRef) {
@@ -418,47 +431,68 @@ export class App {
   }
 
   addEventForm = new FormGroup({
-    event: new FormControl('',[Validators.required, Validators.minLength(5)])
-  })
+    event: new FormControl('', [Validators.required, Validators.minLength(5)]),
+  });
 
-  resetForm(){
-    this.addEventForm.reset()
-    this.addEventForm.markAsUntouched()
-    this.isSubmitted = false
+  resetForm() {
+    this.addEventForm.reset();
+    this.addEventForm.markAsUntouched();
+    this.isSubmitted = false;
   }
 
-  isSubmitted = false
+  isSubmitted = false;
 
-  addEvent(event: any){
-    this.isSubmitted = true
+  addEvent(event: any) {
+    this.isSubmitted = true;
     event.preventDefault();
-    if(this.addEventForm.invalid){
-      this.addEventForm.markAllAsTouched()
+    if (this.addEventForm.invalid) {
+      this.addEventForm.markAllAsTouched();
       return;
     }
 
-    this.eventList.update((prev) => [...prev,{
-      id: this.eventList().length + 1,
-      title: this.addEventForm.get('event')?.value ?? '',
-      date: this.selectedDate ?? ''
-    }])
-    this.eventDialogRef.nativeElement.close()
-    this.resetForm()
+    this.eventList.update((prev) => [
+      ...prev,
+      {
+        id: this.eventList().length + 1,
+        title: this.addEventForm.get('event')?.value ?? '',
+        date: this.selectedDate ?? '',
+      },
+    ]);
+    this.eventDialogRef.nativeElement.close();
+    this.resetForm();
   }
 
   checkForToday(date: string) {
     return new Date(date).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0);
   }
 
-  gotoToday() {
-    const year = new Date().getFullYear();
-    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+  gotoToday(view: 'week' | 'month', weeks: Array<any>) {
+    if (view == 'month') {
+      const year = new Date().getFullYear();
+      const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
 
-    this.onMonthChange({
-      target: {
-        value: year + '-' + month,
-      },
-    });
+      this.onMonthChange({
+        target: {
+          value: year + '-' + month,
+        },
+      });
+    }
+
+    if (view == 'week') {
+      const year = new Date().getFullYear();
+      const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+      const day = new Date().getDate().toString().padStart(2, '0');
+      let fullDate = year + '-' + month + '-' + day;
+      let monthFormat = year + '-' + month;
+      if (this.currentMonthForm.get('month')?.value !== monthFormat) {
+        this.onMonthChange({
+          target: {
+            value: year + '-' + month,
+          },
+        });
+      }
+      this.selectedWeek$.next(this.currentWeek + 1);
+    }
   }
 
   @ViewChild('showEventDialog', { static: false })

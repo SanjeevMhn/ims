@@ -1,43 +1,5 @@
 <div class="wrapper relative text-[62.5%] h-screen w-full p-[2em] flex flex-col">
-  @if(getWeeks$ | async; as weeks){
-  <header class="flex gap-[1.5em] items-center mb-[1.5em]">
-    <h2 class="text-[2em] font-semibold">Events Calendar</h2>
-    @if(viewChange$ | async; as currentView){
-        <button class="cursor-pointer p-[0.5em] min-w-[10.5em] rounded-full bg-blue-500 border border-[#adadad] text-[1.6em] text-white" (click)="gotoToday(currentView, weeks.group)">Today</button>
-        <div class="pagination-container flex items-center gap-[0.5em]">
-            <button type="button" class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="prevView(currentView)" [class]="(currentView == 'week' && (selectedWeek$ | async) == 1) ? 'cursor-not-allowed! grayscale-75 opacity-50' : ''">
-                <span class="icon-container">
-                    <lucide-angular [img]="chevronleft" />
-                </span>
-            </button>
-            <button type="button" class="pagination-btn cursor-pointer  p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]" (click)="nextView(currentView)" [class]="(currentView == 'week' && (selectedWeek$ | async) == totalWeeks) ? 'cursor-not-allowed! grayscale-75 opacity-50' : ''">
-                <span class="icon-container">
-                    <lucide-angular [img]="chevronright" />
-                </span>
-            </button>
-        </div>
-    <form [formGroup]="currentMonthForm">
-      <input
-        type="month"
-        name=""
-        id=""
-        formControlName="month"
-        class="form-control"
-        (change)="onMonthChange($event)"
-      />
-    </form>
-    @if(currentView == 'week'){
-        <!-- <div class="date text-[2.2em] font-medium">{{getFormattedDate(currentMonthForm.get('month')?.value)}}</div> -->
-        <div class="date text-[2.2em] font-medium">Week {{(selectedWeek$ | async)}}</div>
-    }
-    <div class="group flex items-center gap-[0.5em]  ml-auto">
-        <select name="" id="" class="form-control" (change)="onViewChange($event)" [formControl]="currentViewFormControl">
-            <option value="month">Month</option>
-            <option value="week">Week</option>
-        </select>
-    </div>
-    }
-  </header>
+    <app-calendar (showEventOutput)="showEvent($event)" (showAddEventFormOutput)="showAddEventForm($event)" class="contents"/>
   <!-- <div class="flex h-full"> -->
     <!-- <div class="frozon-column h-full border-[#adadad] border-l border-t border-b z-50">
         <table class="calendar-table">
@@ -140,59 +102,7 @@
         </table>
     </div> -->
   <!-- </div>  -->
-    <div class="calendar-container grow">
-        <div class="week day-names">
-            @for(day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day){
-                    <div class="day-name">{{day}}</div>
-            }
-        </div>
-        <div class="calendar-body" [class.grid]="weeks.week == null">
-        @if(weeks.week == null){
-            @for(week of weeks.group; track $index + 1){
-                <div class="week">
-                    @for(day of week; track $index + 2){
-                        <div class="day" (click)="showAddEventForm(day)">
-                            <div class="day-index" [class.today]="checkForToday(day.fullDate)">
-                                @if(!day.is_current){
-                                    {{day.monthName}} -
-                                }
-                            {{day.dayIndex}}
-                            </div>
-                            <ul class="event-list flex flex-col gap-[0.2em]">
-                                @for(event of eventList(); track event.id){
-                                    @if(event.date == day.fullDate){
-                                        <li class="event p-[0.2em_0.5em]  bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
-                                    }
-                                }
-                            </ul>
-                        </div>
-                    }
-                </div>
-            }
-        }@else{
-            <div class="week">
-            @for(day of weeks.group[weeks.week - 1]; track $index + 3){
-                <div class="day min-h-[100px]"  (click)="showAddEventForm(day)">
-                    <div class="day-index"  [class.today]="checkForToday(day.fullDate)">
-                        @if(!day.is_current){
-                            {{day.monthName}} - 
-                        }
-                        {{day.dayIndex}}
-                    </div>
-                    <ul class="event-list flex flex-col gap-[0.2em]">
-                        @for(event of eventList(); track event.id){
-                            @if(event.date == day.fullDate){
-                                <li class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg" (click)="showEvent($event,event)">{{event.title}}</li>
-                            }
-                        }
-                    </ul>
-                </div>
-            }
-            </div>
-        }
-        </div>
-    </div>
-  }
+   
 
   <dialog class="event-dialog" #eventDialog (close)="resetForm()">
     <form [formGroup]="addEventForm" class="form bg-white! relative" (submit)="addEvent($event)">
@@ -237,8 +147,8 @@
             </button>
         </div>
         @if(activeEvent){
-        <h2 class="text-[2em] font-medium">{{activeEvent.title}}</h2>
-        <p class="text-[1.6em]">{{activeEvent.date}}</p>
+            <h2 class="text-[2em] font-medium">{{activeEvent.title}}</h2>
+            <p class="text-[1.6em]">{{activeEvent.date}}</p>
         }
     </div>
   </dialog>

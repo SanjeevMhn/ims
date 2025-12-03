@@ -198,14 +198,3 @@ dialog.event-dialog {
     }
   }
 }
-
-.event-list {
-  width: 100%;
-  .event {
-    width: 100%;
-    text-align: left;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}

@@ -20,19 +20,25 @@ export class App {
 
   selectedDate: string | null = null;
   eventService = inject(Event);
+  fromCreateButton = false
 
   @ViewChild('eventDialog') eventDialogRef!: ElementRef<HTMLDialogElement>;
   @ViewChild('eventTitle') eventTitleRef!: ElementRef<HTMLInputElement>;
-  showAddEventForm(day: any) {
+  showAddEventForm(data: any) {
     if (this.eventDialogRef) {
+      this.fromCreateButton = data.fromCreate;
       this.eventDialogRef.nativeElement.showModal();
-      this.selectedDate = day.fullDate;
+      if(!data.fromCreate){
+        this.selectedDate = data.day.fullDate;
+        this.addEventForm.get('date')?.setValue(data.day.fullDate)
+      }
       this.eventTitleRef.nativeElement.focus();
     }
   }
 
   addEventForm = new FormGroup({
     event: new FormControl('', [Validators.required, Validators.minLength(5)]),
+    date: new FormControl('',[Validators.required])
   });
 
   resetForm() {
@@ -56,7 +62,7 @@ export class App {
     if (!this.editMode) {
       this.eventService.addEvent(
         this.addEventForm.get('event')?.value ?? '',
-        this.selectedDate ?? ''
+        this.fromCreateButton ? this.addEventForm.get('date')?.value! : this.selectedDate ?? ''
       );
     } else {
       this.eventService.updateEvent(
@@ -111,7 +117,9 @@ export class App {
       event: this.activeEvent.title,
     });
     this.showAddEventForm({
-      fullDate: this.activeEvent.fullDate,
+      day: {
+        fullDate: this.activeEvent.fullDate,
+      },
     });
     this.editMode = true;
   }

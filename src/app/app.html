@@ -1,7 +1,11 @@
-<div class="wrapper relative text-[62.5%] h-screen w-full p-[2em] flex flex-col">
-    <app-calendar (showEventOutput)="showEvent($event)" (showAddEventFormOutput)="showAddEventForm($event)" class="contents"/>
+<div class="wrapper relative text-[62.5%] h-screen w-full flex flex-col">
+  <app-calendar
+    (showEventOutput)="showEvent($event)"
+    (showAddEventFormOutput)="showAddEventForm($event)"
+    class="contents"
+  />
   <!-- <div class="flex h-full"> -->
-    <!-- <div class="frozon-column h-full border-[#adadad] border-l border-t border-b z-50">
+  <!-- <div class="frozon-column h-full border-[#adadad] border-l border-t border-b z-50">
         <table class="calendar-table">
             <thead class="sticky top-0 h-[7.3em] border-[#adadad] border-b">
                 <tr>
@@ -27,7 +31,7 @@
             </tbody>
         </table>
     </div> -->
-    <!-- <div class="table-container w-full overflow-y-auto h-full" [class]="animateTable() ? 'move' : ''">
+  <!-- <div class="table-container w-full overflow-y-auto h-full" [class]="animateTable() ? 'move' : ''">
         <table class="calendar-table w-full">
             <thead class="sticky top-0">
                 <tr>
@@ -102,54 +106,68 @@
         </table>
     </div> -->
   <!-- </div>  -->
-   
 
   <dialog class="event-dialog" #eventDialog (close)="resetForm()">
     <form [formGroup]="addEventForm" class="form bg-white! relative" (submit)="addEvent($event)">
-        <button type="button" class="icon-container ml-auto cursor-pointer" (click)="closeForm()">
-            <lucide-angular [img]="closeIcon"  />
-        </button>
-        <div class="form-group flex-row!">
-            <label for="" class="form-label">Date:</label>
-            <p class="text-[1.6em]">{{selectedDate ? formatDateByMonthAndDayName(selectedDate) : ''}}</p>
-        </div>
-        <div class="form-group">
-            <label for="event" class="form-label">Event Title</label>
-            <input type="text" #eventTitle name="event" id="event" class="form-control" placeholder="Add Title" formControlName="event">
-            @if(isSubmitted){
-                @if(addEventForm.get('event')?.invalid && addEventForm.get('event')?.touched){
-                    @if(addEventForm.get('event')?.hasError('required')){
-                        <small class="text-red-600 text-[1.2em]">Event Title Required</small>
-                    }
-                    @if(addEventForm.get('event')?.hasError('minlength')){
-                        <small class="text-red-600 text-[1.2em]">Event Title must be atleast 5 characters long</small>
-                    }
-                }
-            }
-        </div>
-        <div class="form-action">
-            <button type="submit" class="btn">Save</button>
-        </div>
+      <button type="button" class="icon-container ml-auto cursor-pointer" (click)="closeForm()">
+        <lucide-angular [img]="closeIcon" />
+      </button>
+      @if(fromCreateButton){
+      <div class="form-group">
+        <label for="date" class="form-label">Date</label>
+        <input type="date" name="date" id="date" class="form-control" formControlName="date" />
+      </div>
+      }@else{
+      <div class="form-group flex-row!">
+        <label for="" class="form-label">Date:</label>
+        <p class="text-[1.6em]">
+          {{ selectedDate ? formatDateByMonthAndDayName(selectedDate) : '' }}
+        </p>
+      </div>
+      }
+      <div class="form-group">
+        <label for="event" class="form-label">Event Title</label>
+        <input
+          type="text"
+          #eventTitle
+          name="event"
+          id="event"
+          class="form-control"
+          placeholder="Add Title"
+          formControlName="event"
+        />
+        @if(isSubmitted){ @if(addEventForm.get('event')?.invalid &&
+        addEventForm.get('event')?.touched){ @if(addEventForm.get('event')?.hasError('required')){
+        <small class="text-red-600 text-[1.2em]">Event Title Required</small>
+        } @if(addEventForm.get('event')?.hasError('minlength')){
+        <small class="text-red-600 text-[1.2em]"
+          >Event Title must be atleast 5 characters long</small
+        >
+        } } }
+      </div>
+      <div class="form-action">
+        <button type="submit" class="btn">Save</button>
+      </div>
     </form>
   </dialog>
 
   <dialog class="event-dialog" #showEventDialog>
     <div class="event-details form bg-white! gap-[0.5em]!">
-        <div class="toolbar flex justify-end gap-[1em]">
-            <button type="button" class="icon-container cursor-pointer" (click)="deleteEvent()">
-                <lucide-angular [img]="deleteIcon" />
-            </button>
-            <button type="button" class="icon-contaioner cursor-pointer" (click)="editEvent()">
-                <lucide-angular [img]="editIcon" />
-            </button>
-            <button type="button" class="icon-container cursor-pointer" (click)="closeShowEvent()">
-                <lucide-angular [img]="closeIcon"  />
-            </button>
-        </div>
-        @if(activeEvent){
-            <h2 class="text-[2em] font-medium">{{activeEvent.title}}</h2>
-            <p class="text-[1.6em]">{{activeEvent.date}}</p>
-        }
+      <div class="toolbar flex justify-end gap-[1em]">
+        <button type="button" class="icon-container cursor-pointer" (click)="deleteEvent()">
+          <lucide-angular [img]="deleteIcon" />
+        </button>
+        <button type="button" class="icon-contaioner cursor-pointer" (click)="editEvent()">
+          <lucide-angular [img]="editIcon" />
+        </button>
+        <button type="button" class="icon-container cursor-pointer" (click)="closeShowEvent()">
+          <lucide-angular [img]="closeIcon" />
+        </button>
+      </div>
+      @if(activeEvent){
+      <h2 class="text-[2em] font-medium">{{ activeEvent.title }}</h2>
+      <p class="text-[1.6em]">{{ activeEvent.date }}</p>
+      }
     </div>
   </dialog>
 </div>

@@ -1,13 +1,8 @@
 @if(getWeeks$ | async; as weeks){
-<header class="flex gap-[1.5em] items-center mb-[1.5em]">
+<header class="flex gap-[1.5em] items-center p-[1.5em_2.5em]">
   <h2 class="text-[2em] font-semibold">Events Calendar</h2>
   @if(viewChange$ | async; as currentView){
-  <button
-    class="cursor-pointer p-[0.5em] min-w-[10.5em] rounded-full bg-blue-500 border border-[#adadad] text-[1.6em] text-white"
-    (click)="gotoToday(currentView, weeks.group)"
-  >
-    Today
-  </button>
+
   <div class="pagination-container flex items-center gap-[0.5em]">
     <button
       type="button"
@@ -22,6 +17,12 @@
       <span class="icon-container">
         <lucide-angular [img]="chevronleft" />
       </span>
+    </button>
+    <button
+      class="cursor-pointer p-[0.5em] min-w-[5.5em] rounded-full bg-blue-500 border border-[#adadad] text-[1.6em] text-white"
+      (click)="gotoToday(currentView, weeks.group)"
+    >
+      Today
     </button>
     <button
       type="button"
@@ -66,58 +67,76 @@
   </div>
   }
 </header>
-<div class="calendar-container grow">
-  <div class="week day-names">
-    @for(day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day){
-    <div class="day-name">{{ day }}</div>
-    }
-  </div>
-  <div class="calendar-body" [class.grid]="weeks.week == null">
-    @if(weeks.week == null){ @for(week of weeks.group; track $index + 1){
-    <div class="week">
-      @for(day of week; track $index + 2){
-      <div class="day" (click)="showAddEventForm(day)">
-        <div class="day-index" [class.today]="checkForToday(day.fullDate)">
-          @if(!day.is_current){
-          {{ day.monthName }} - }
-          {{ day.dayIndex }}
-        </div>
-        <ul class="event-list flex flex-col gap-[0.2em]">
-          @for(event of eventService.getEventList(); track event.id){ @if(event.date == day.fullDate){
-          <li
-            class="event p-[0.2em_0.5em] bg-green-700 text-white cursor-pointer text-[14px] rounded-lg"
-            (click)="showEvent($event, event)"
-          >
-            {{ event.title }}
-          </li>
-          } }
-        </ul>
+
+<div class="bg-[#d8d8d854] h-full grid grid-cols-[25em_1fr]">
+  <aside class="sidebar bg-white p-[2em]">
+    <button
+      type="button"
+      class="btn flex items-center gap-[0.5em] p-[1.2em] rounded-2xl border border-[#adadad] bg-white cursor-pointer"
+    >
+      <span class="icon-container">
+        <lucide-angular [img]="plusIcon" />
+      </span>
+      <span class="label-text text-[1.6em]" (click)="showAddEventForm(null, true)">Create</span>
+    </button>
+  </aside>
+  <div class="p-[2.5em]">
+    <div class="calendar-container grow bg-white overflow-hidden" [class.h-full]="(viewChange$ | async) == 'month'">
+      <div class="week day-names">
+        @for(day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day){
+        <div class="day-name">{{ day }}</div>
+        }
       </div>
-      }
-    </div>
-    } }@else{
-    <div class="week">
-      @for(day of weeks.group[weeks.week - 1]; track $index + 3){
-      <div class="day min-h-[100px]" (click)="showAddEventForm(day)">
-        <div class="day-index" [class.today]="checkForToday(day.fullDate)">
-          @if(!day.is_current){
-          {{ day.monthName }} - }
-          {{ day.dayIndex }}
+      <div class="calendar-body" [class.grid]="weeks.week == null">
+        @if(weeks.week == null){ @for(week of weeks.group; track $index + 1){
+        <div class="week">
+          @for(day of week; track $index + 2){
+          <div class="day" (click)="showAddEventForm(day)">
+            <div class="day-index" [class.today]="checkForToday(day.fullDate)">
+              @if(!day.is_current){
+              {{ day.monthName }} - }
+              {{ day.dayIndex }}
+            </div>
+            <ul class="event-list flex flex-col gap-[0.2em]">
+              @for(event of eventService.getEventList(); track $index + 1){ @if(event.date ==
+              day.fullDate){
+              <li
+                class="event p-[0.2em_0.5em] bg-green-700 text-white cursor-pointer text-[14px] rounded-lg"
+                (click)="showEvent($event, event)"
+              >
+                {{ event.title }}
+              </li>
+              } }
+            </ul>
+          </div>
+          }
         </div>
-        <ul class="event-list flex flex-col gap-[0.2em]">
-          @for(event of eventService.getEventList(); track event.id){ @if(event.date == day.fullDate){
-          <li
-            class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg"
-            (click)="showEvent($event, event)"
-          >
-            {{ event.title }}
-          </li>
-          } }
-        </ul>
+        } }@else{
+        <div class="week">
+          @for(day of weeks.group[weeks.week - 1]; track $index + 3){
+          <div class="day min-h-[100px]" (click)="showAddEventForm(day)">
+            <div class="day-index" [class.today]="checkForToday(day.fullDate)">
+              @if(!day.is_current){
+              {{ day.monthName }} - }
+              {{ day.dayIndex }}
+            </div>
+            <ul class="event-list flex flex-col gap-[0.2em]">
+              @for(event of eventService.getEventList(); track $index){ @if(event.date ==
+              day.fullDate){
+              <li
+                class="event p-[0.2em] text-center bg-green-700 text-white cursor-pointer text-[14px] rounded-lg"
+                (click)="showEvent($event, event)"
+              >
+                {{ event.title }}
+              </li>
+              } }
+            </ul>
+          </div>
+          }
+        </div>
+        }
       </div>
-      }
     </div>
-    }
   </div>
 </div>
 }

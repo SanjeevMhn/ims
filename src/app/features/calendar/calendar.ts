@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ChevronLeft, ChevronRight, LucideAngularModule, Pencil, Trash2, X } from 'lucide-angular';
+import { ChevronLeft, ChevronRight, LucideAngularModule, Pencil, Plus, Trash2, X } from 'lucide-angular';
 import { BehaviorSubject, map, tap, combineLatest } from 'rxjs';
 import { Event } from '../../shared/services/event';
 import { AsyncPipe } from '@angular/common';
@@ -14,6 +14,7 @@ import { AsyncPipe } from '@angular/common';
 export class Calendar {
   chevronleft = ChevronLeft;
   chevronright = ChevronRight;
+  plusIcon = Plus
   activeEvent: any | null = null;
   currentMonthForm = new FormGroup({
     month: new FormControl(''),
@@ -410,7 +411,10 @@ export class Calendar {
     this.showEventOutput.emit(active);
   }
 
-  showAddEventForm(day: any){
-    this.showAddEventFormOutput.emit(day)
+  showAddEventForm(day: any | null, fromCreate: boolean = false){
+    this.showAddEventFormOutput.emit({
+      day: day,
+      fromCreate: fromCreate
+    })
   }
 }

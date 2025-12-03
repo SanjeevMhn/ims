@@ -9,6 +9,8 @@
 .calendar-container {
   width: 100%;
   font-size: inherit;
+  border-radius: 2em;
+  border: 2px solid #adadad;
   .calendar-body {
     height: calc(100% - 4em);
   }
@@ -16,6 +18,11 @@
   .week {
     display: grid;
     grid-template-columns: repeat(7, calc(100% / 7));
+    &:last-child{
+        .day{
+            border-bottom-width: 0;
+        }
+    }
     .day {
       border: 1px solid #adadad;
       font-size: 1.6em;
@@ -23,8 +30,13 @@
       text-align: center;
       cursor: pointer;
       width: 100%;
-      &:not(:first-child) {
-        border-left-width: 0;
+      border-left-width: 0;
+      &:last-child {
+        border-right-width: 0;
+      }
+
+      &:hover {
+        background: #dadada7a;
       }
 
       .day-index {
@@ -53,10 +65,22 @@
         font-weight: 500;
         text-align: center;
         padding: 0.25em;
-        &:not(:first-child) {
-          border-left-width: 0;
+        border-left-width: 0;
+        border-top-width: 0;
+        &:last-child {
+          border-right-width: 0;
         }
       }
     }
+  }
+}
+.event-list {
+  width: 100%;
+  .event {
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }

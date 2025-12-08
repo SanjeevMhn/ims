@@ -108,14 +108,14 @@
   <!-- </div>  -->
 
   <dialog class="event-dialog" #eventDialog (close)="resetForm()">
-    <form [formGroup]="addEventForm" class="form bg-white! relative" (submit)="addEvent($event)">
+    <form [formGroup]="addEventForm" class="form bg-[#1e1f20]! relative text-white" (submit)="addEvent($event)">
       <button type="button" class="icon-container ml-auto cursor-pointer" (click)="closeForm()">
         <lucide-angular [img]="closeIcon" />
       </button>
       @if(fromCreateButton){
       <div class="form-group">
         <label for="date" class="form-label">Date</label>
-        <input type="date" name="date" id="date" class="form-control" formControlName="date" />
+        <input type="date" name="date" id="date" class="form-control text-black!" formControlName="date" />
       </div>
       }@else{
       <div class="form-group flex-row!">
@@ -132,7 +132,7 @@
           #eventTitle
           name="event"
           id="event"
-          class="form-control"
+          class="form-control text-black!"
           placeholder="Add Title"
           formControlName="event"
         />
@@ -152,7 +152,7 @@
   </dialog>
 
   <dialog class="event-dialog" #showEventDialog>
-    <div class="event-details form bg-white! gap-[0.5em]!">
+    <div class="event-details form bg-[#1e1f20]! gap-[0.5em]! text-white">
       <div class="toolbar flex justify-end gap-[1em]">
         <button type="button" class="icon-container cursor-pointer" (click)="deleteEvent()">
           <lucide-angular [img]="deleteIcon" />

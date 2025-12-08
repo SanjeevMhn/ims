@@ -1,12 +1,12 @@
 @if(getWeeks$ | async; as weeks){
-<header class="flex gap-[1.5em] items-center p-[1.5em_2.5em]">
-  <h2 class="text-[2em] font-semibold">Events Calendar</h2>
+<header class="flex gap-[1.5em] items-center p-[1.5em_2.5em] bg-[#1b1b1b] ">
+  <h2 class="text-[2em] font-semibold text-white w-[calc(10.5em)]">Events Calendar</h2>
   @if(viewChange$ | async; as currentView){
 
-  <div class="pagination-container flex items-center gap-[0.5em]">
+  <div class="pagination-container flex items-center gap-[1em]">
     <button
       type="button"
-      class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]"
+      class="pagination-btn cursor-pointer p-[0.8em] w-[3.2em] h-[3.2em] rounded-full border border-[#adadad] flex items-center justify-center"
       (click)="prevView(currentView)"
       [class]="
         currentView == 'week' && (selectedWeek$ | async) == 1
@@ -14,19 +14,19 @@
           : ''
       "
     >
-      <span class="icon-container">
-        <lucide-angular [img]="chevronleft" />
+      <span class="icon-container text-[1.2em]">
+        <lucide-angular [img]="chevronleft" class="text-white" />
       </span>
     </button>
     <button
-      class="cursor-pointer p-[0.5em] min-w-[5.5em] rounded-full bg-blue-500 border border-[#adadad] text-[1.6em] text-white"
+      class="cursor-pointer p-[0.5em] min-w-[5.5em] rounded-full border border-[#adadad] text-[1.6em] text-white"
       (click)="gotoToday(currentView, weeks.group)"
     >
       Today
     </button>
     <button
       type="button"
-      class="pagination-btn cursor-pointer p-[0.8em] rounded-full bg-[#dffbf6] border border-[#adadad]"
+      class="pagination-btn cursor-pointer p-[0.8em] rounded-full w-[3.2em] h-[3.2em] flex items-center justify-center border border-[#adadad]"
       (click)="nextView(currentView)"
       [class]="
         currentView == 'week' && (selectedWeek$ | async) == totalWeeks
@@ -35,7 +35,7 @@
       "
     >
       <span class="icon-container">
-        <lucide-angular [img]="chevronright" />
+        <lucide-angular [img]="chevronright" class="text-white" />
       </span>
     </button>
   </div>
@@ -45,19 +45,19 @@
       name=""
       id=""
       formControlName="month"
-      class="form-control"
+      class="form-control bg-[#1b1b1b]! text-white!"
       (change)="onMonthChange($event)"
     />
   </form>
   @if(currentView == 'week'){
   <!-- <div class="date text-[2.2em] font-medium">{{getFormattedDate(currentMonthForm.get('month')?.value)}}</div> -->
-  <div class="date text-[2.2em] font-medium">Week {{ selectedWeek$ | async }}</div>
+  <div class="date text-[2.2em] font-medium text-white">Week {{ selectedWeek$ | async }}</div>
   }
   <div class="group flex items-center gap-[0.5em] ml-auto">
     <select
       name=""
       id=""
-      class="form-control"
+      class="form-control  bg-[#1b1b1b]! text-white!"
       (change)="onViewChange($event)"
       [formControl]="currentViewFormControl"
     >
@@ -68,20 +68,20 @@
   }
 </header>
 
-<div class="bg-[#d8d8d854] h-full grid grid-cols-[25em_1fr]">
-  <aside class="sidebar bg-white p-[2em]">
+<div class="h-full grid grid-cols-[25em_1fr] bg-[#1b1b1b]">
+  <aside class="sidebar bg-[#1b1b1b] p-[2em] ">
     <button
       type="button"
-      class="btn flex items-center gap-[0.5em] p-[1.2em] rounded-2xl border border-[#adadad] bg-white cursor-pointer"
+      class="btn flex items-center gap-[0.5em] p-[1.5em_2em] rounded-2xl bg-[#40454A] cursor-pointer"
     >
       <span class="icon-container">
-        <lucide-angular [img]="plusIcon" />
+        <lucide-angular [img]="plusIcon" class="text-white" />
       </span>
-      <span class="label-text text-[1.6em]" (click)="showAddEventForm(null, true)">Create</span>
+      <span class="label-text text-[1.75em] text-white" (click)="showAddEventForm(null, true)">Create</span>
     </button>
   </aside>
-  <div class="p-[2.5em]">
-    <div class="calendar-container grow bg-white overflow-hidden" [class.h-full]="(viewChange$ | async) == 'month'">
+  <div class="pr-[2.5em] pb-[2.5em]">
+    <div class="calendar-container grow bg-[#131314] text-white overflow-hidden" [class.h-full]="(viewChange$ | async) == 'month'">
       <div class="week day-names">
         @for(day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day){
         <div class="day-name">{{ day }}</div>

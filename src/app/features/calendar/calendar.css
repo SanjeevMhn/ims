@@ -9,8 +9,8 @@
 .calendar-container {
   width: 100%;
   font-size: inherit;
-  border-radius: 2em;
-  border: 2px solid #adadad;
+  border-radius: 3.2em;
+  /* border: 2px solid #adadad; */
   .calendar-body {
     height: calc(100% - 4em);
   }
@@ -24,24 +24,25 @@
         }
     }
     .day {
-      border: 1px solid #adadad;
+      border: 1px solid #333537;
       font-size: 1.6em;
       padding: 0.5em;
       text-align: center;
       cursor: pointer;
       width: 100%;
       border-left-width: 0;
+      border-top-width: 0;
       &:last-child {
         border-right-width: 0;
       }
 
       &:hover {
-        background: #dadada7a;
+        background: #333537;
       }
 
       .day-index {
         &.today {
-          border: 1px solid #adadad;
+          border: 1px solid #333537;
           background-color: #3f93c3;
           padding: 0.5em;
           display: inline-flex;
@@ -60,7 +61,7 @@
     &.day-names {
       height: 4em;
       .day-name {
-        border: 1px solid #adadad;
+        border: 1px solid #333537;
         font-size: 1.7em;
         font-weight: 500;
         text-align: center;

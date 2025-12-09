@@ -30,7 +30,7 @@ export class App {
       this.eventDialogRef.nativeElement.showModal();
       if(!data.fromCreate){
         this.selectedDate = data.day.fullDate;
-        this.addEventForm.get('date')?.setValue(data.day.fullDate)
+        this.addEventForm.get('from_date')?.setValue(data.day.fullDate)
       }
       this.eventTitleRef.nativeElement.focus();
     }
@@ -38,7 +38,8 @@ export class App {
 
   addEventForm = new FormGroup({
     event: new FormControl('', [Validators.required, Validators.minLength(5)]),
-    date: new FormControl('',[Validators.required])
+    from_date: new FormControl('',[Validators.required]),
+    to_date: new FormControl(null)
   });
 
   resetForm() {
@@ -60,11 +61,22 @@ export class App {
       return;
     }
     if (!this.editMode) {
-      this.eventService.addEvent(
-        this.addEventForm.get('event')?.value ?? '',
-        this.fromCreateButton ? this.addEventForm.get('date')?.value! : this.selectedDate ?? ''
-      );
+      if(this.addEventForm.get('to_date')!.value !== null){
+        let getStartDate = this.addEventForm.get('from_date')?.value!
+        let getToDate = this.addEventForm.get('to_date')?.value!
+        let getDateRanges = this.getDatesBetweenDates(getStartDate, getToDate)
+        getDateRanges.forEach(date => {
+          this.eventService.addEvent(this.addEventForm.get('event')?.value ?? '',date)
+        })
+      }else{
+        this.eventService.addEvent(
+          this.addEventForm.get('event')?.value ?? '',
+          this.fromCreateButton ? this.addEventForm.get('date')?.value! : this.selectedDate ?? ''
+        );
+      }
+
     } else {
+  
       this.eventService.updateEvent(
         this.activeEvent.id,
         this.addEventForm.get('event')?.value ?? ''
@@ -73,6 +85,24 @@ export class App {
     this.editMode = false;
     this.eventDialogRef.nativeElement.close();
     this.resetForm();
+  }
+
+  getDatesBetweenDates(startDate:string, endDate:string){
+    const dates = []
+    let currentDate = new Date(startDate)
+    let lastDate = new Date(endDate)
+
+    while(currentDate.getTime() <= lastDate.getTime()){
+      const year = currentDate.getUTCFullYear()
+      const month = String(currentDate.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(currentDate.getUTCDate()).padStart(2, "0")
+
+      dates.push(`${year}-${month}-${day}`)
+
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+    }
+
+    return dates
   }
 
   closeForm() {

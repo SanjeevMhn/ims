@@ -87,6 +87,7 @@
         <div class="day-name">{{ day }}</div>
         }
       </div>
+
       <div class="calendar-body" [class.grid]="weeks.week == null">
         @if(weeks.week == null){ @for(week of weeks.group; track $index + 1){
         <div class="week">

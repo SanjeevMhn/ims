@@ -30,6 +30,7 @@
       text-align: center;
       cursor: pointer;
       width: 100%;
+      max-width: 9.5em;
       border-left-width: 0;
       border-top-width: 0;
       &:last-child {

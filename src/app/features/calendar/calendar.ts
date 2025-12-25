@@ -32,7 +32,11 @@ export class Calendar {
     tap((view) => {
       if (view == 'week') {
         this.currentViewFormControl.setValue('week');
-        this.selectedWeek$.next(this.currentWeek + 1);
+        if(this.currentMonth.getValue() == this.currentMonthFormatted.toString()){
+          this.selectedWeek$.next(this.currentWeek + 1);
+        }else{
+          this.selectedWeek$.next(1);
+        }
       } else {
         this.currentViewFormControl.setValue('month');
         this.selectedWeek$.next(null);
